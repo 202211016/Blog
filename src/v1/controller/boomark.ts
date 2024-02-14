@@ -24,7 +24,7 @@ router.post('/article/:id/bookmark', validateIDParam,bookmarkArticle);
 router.delete('/article/:id/bookmark',validateIDParam,removeBookmark);
 router.get('/article/:id/bookmarks/count', validateIDParam,getBookmarksCount);
 router.get('/user/:id/bookmarks/count', validateIDParam,getUserBookmarksCount);
-router.get('/user/bookmarks', getAllUserBookmarks);
+
 
 /*
 //  save the article 
@@ -100,37 +100,7 @@ async function getUserBookmarksCount(req: any, res: any) {
         res.send(functionsObj.output(0, 'Internal Server Error'));
     }
 }
-/*
-// listing of the users bookmarks 
- */
-async function getAllUserBookmarks(req: any, res: any) {
-    var functionsObj = new functions();
-    try {
-        const user_id = req.tokenData.user.user_id;
-        const bookmarksObj = new dbbookmarks();
-        const userBookmarks = await bookmarksObj.getAllBookmarksByUser(user_id);
-        if (!userBookmarks) {
-            return res.send(functionsObj.output(0, 'Failed to retrieve saved articles for the user.'));
-        }
-        const articleIds = userBookmarks.map((bookmark: any) => bookmark.article_id);
-        const articlesObj = new dbarticles();
-        const articles = await articlesObj.getArticleById(articleIds);
-        if (!articles) {
-            return res.send(functionsObj.output(0, 'Failed to retrieve articles.'));
-        }
-        const result = userBookmarks.map((bookmark: any) => {
-            const article = articles.find((a: any) => a.article_id === bookmark.article_id);
-            return {
-                title: article.title,
-                contents: article.contents,
-            };
-        });
-        res.send(functionsObj.output(1, 'Bookmark', { user_bookmarks: result }));
-    } catch (error) {
-        console.error('Error retrieving saved articles for user:', error);
-        res.send(functionsObj.output(0, 'Internal Server Error',null));
-    }
-}
+
 /*
 // Delete Bookmark
 */
