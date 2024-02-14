@@ -63,6 +63,8 @@ async function getSharedArticles(req: any, res: any) {
         const usersObj = new dbusers();
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
+        usersObj.page = page;
+        usersObj.rpp = limit;
         const targetUserId = req.tokenData.user.user_id;  
         const sharedArticles = await sharesObj.getSharesCountByArticleId(targetUserId);
         if (!sharedArticles || sharedArticles.length === 0) {
