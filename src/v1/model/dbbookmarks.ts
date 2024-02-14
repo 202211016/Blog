@@ -74,31 +74,7 @@ export class dbbookmarks extends appdb {
         return null;
     }
 }
-   /**
-     * Retrieve articles by user_id (based on bookmarks)
-     * @param userId User ID to search for
-     * @returns Array containing articles data
-     */
-   async getAllBookmarksByUser(userId: number) {
-    try {
-        const bookmarksQuery = `SELECT article_id FROM bookmarks WHERE user_id = ${userId}`;
-        const bookmarkedArticles = await this.executeQuery(bookmarksQuery);  
-        if (!bookmarkedArticles || bookmarkedArticles.length === 0) {
-            return []; // No bookmarks found for the user
-        }
-
-        const articleIds = bookmarkedArticles.map((bookmark: any) => bookmark.article_id);
-        
-        this.table = 'articles'; // Set the table name to 'articles'
-        this.where = ` WHERE article_id IN (${articleIds.join(', ')})`;
-
-        const result = await this.listRecords("article_id, title, contents, author_id");
-        return result;
-    } catch (error) {
-        console.error('Error retrieving articles by user bookmarks:', error);
-        return [];
-    }
-}
+  
     /**
      * Remove bookmark for a specific article
      * @param bookmarkId Bookmark ID to remove
