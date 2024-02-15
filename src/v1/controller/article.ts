@@ -99,7 +99,6 @@ async function getArticleById(req: any, res: any) {
 
     try {
         const articleId = req.params.id;
-
         if (!articleId) {
             return res.send(functionsObj.output(0, 'Article ID parameter is missing.',null));
         }
@@ -117,34 +116,26 @@ async function getArticleById(req: any, res: any) {
 /**
  * Retrieve all articles route 
  */
+
 async function getAllArticles(req: any, res: any) {
     var functionsObj = new functions();
     try {
         const articlesObj = new dbarticles();
-        const usersObj = new dbusers(); 
-        const page = parseInt(req.query.page) || 2;
-        const limit = parseInt(req.query.limit) || 3;
+        const usersObj = new dbusers();
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
         articlesObj.page = page;
-        articlesObj.rpp = limit;
-        const articles = await articlesObj.listRecords("article_id, title, contents, author_id");
-        if (!articles || articles.length === 0) {
+         articlesObj.rpp = limit;
+        const articlesWithAuthors = await articlesObj. getAllArticlesWithAuthors();
+        if (!articlesWithAuthors || articlesWithAuthors.length === 0) {
             return res.send(functionsObj.output(0, 'No articles found.', null));
         }
-        const articlesWithAuthors = await Promise.all(articles.map(async (article: any) => {
-            const author = await usersObj.getUserById(article.author_id);
-            return {
-                title: article.title,
-                contents: article.contents,
-                author_name: author ? author.username : 'Unknown',
-            };
-        }));
         res.send(functionsObj.output(1, 'Articles', { data: articlesWithAuthors }));
     } catch (error) {
         console.error('Error retrieving all articles:', error);
-        res.send(functionsObj.output(0, 'Internal Server Error',null));
+        res.send(functionsObj.output(0, 'Internal Server Error', null));
     }
 }
-
 /**
  * Retrieve articles by username route
  */
@@ -179,15 +170,13 @@ async function deleteArticle(req: any, res: any) {
         if (!article || article.length === 0) {
             return res.send(functionsObj.output(0, 'No article found for the given ID.', null));
         }
-        if (article[0].author_id !== req.body.author_id) {
+        if (article[0].author_id !== req.params.id) {
             return res.send(functionsObj.output(0, 'You do not have permission to delete this article.', null));
         }
         const result = await articlesObj.deleteRecord(articleId);
-
         if (!result) {
             return res.send(functionsObj.output(0, 'No article found for the given ID.', null));
         }
-
         res.send(functionsObj.output(1,'Articles Deleted Sucessfully'));
     } catch (error) {
         console.error('Error deleting article by ID:', error);
