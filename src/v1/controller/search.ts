@@ -38,7 +38,7 @@ async function searchArticles(req: any, res: any) {
         const username = req.params.username;
         console.log('articleId: ', username);
         if (!username) {
-        return res.json({ status: 0, message: 'Article ID parameter is missing.' });
+        return res.json({ status: 0, message: 'Article username  is missing.' });
         }
         const articlesObj = new dbarticles();
         const searchResults = await articlesObj.getArticlesByUsername(username);
@@ -48,6 +48,8 @@ async function searchArticles(req: any, res: any) {
         } 
         const commentsObj = new dbcomments();
         const likesObj = new dblikes();
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
         const resultPromises = searchResults.map(async (article: any) => {
             const comments = await commentsObj.getCommentsByArticleId(article.article_id);
             const likes = await likesObj.getLikesByArticleId(article.article_id);
@@ -66,5 +68,7 @@ async function searchArticles(req: any, res: any) {
         res.send(functionsObj.output(0, 'Internal Server Error', null));
     }
 }
+
+
 
 export default router;
