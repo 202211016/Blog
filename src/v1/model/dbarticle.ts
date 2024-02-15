@@ -1,9 +1,9 @@
 import { appdb } from "./appdb";
 
-
 export class dbarticles extends appdb {
     private from: string = '';
     linkTagToArticle: any;
+
     constructor() {
         super();
         this.table = 'articles';
@@ -16,8 +16,13 @@ export class dbarticles extends appdb {
      * @returns Object containing information about the saved article
      */
     async saveArticleData(articleData: any) {
-        let result = await this.insertRecord(articleData);
-        return result;
+        try {
+            let result = await this.insertRecord(articleData);
+            return result;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
     }
 
     /**
@@ -26,9 +31,14 @@ export class dbarticles extends appdb {
      * @returns Object containing article data
      */
     async getArticleById(articleId: number) {
-        this.where = " WHERE article_id = " + articleId;
-        let result = await this.listRecords("article_id, title, contents, author_id");
-        return result;
+        try {
+            this.where = " WHERE article_id = " + articleId;
+            let result = await this.listRecords("article_id, title, contents, author_id");
+            return result;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
     }
 
     /**
@@ -37,36 +47,69 @@ export class dbarticles extends appdb {
      * @returns Array containing articles data
      */
     async getArticlesByAuthorId(authorId: number) {
-        this.where = " WHERE author_id = " + authorId;
-        let result = await this.listRecords("article_id, title, contents, author_id");
-        return result;
+        try {
+            this.where = " WHERE author_id = " + authorId;
+            let result = await this.listRecords("article_id, title, contents, author_id");
+            return result;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
     }
+
     /**
      * Retrieve all articles from the database
      * @returns Array containing all articles data
      */
     async getAllArticles() {
-        this.from = 'articles';
-        this.where = ''; // No specific condition to retrieve all articles
-        let result = await this.listRecords(" title, contents");
-        return result;
+        try {
+            // this.from = 'articles';
+            this.where = 'articles'; // No specific condition to retrieve all articles
+            let result = await this.listRecords(" title, contents");
+            return result;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
     }
-
     
+    /**
+     * Retrieve all articles with author names from the database
+   /**
+     * Retrieve articles by username
+     * @param username Username to search for
+     * @returns Array containing articles data
+     */
+   async getAllArticlesWithAuthors() {
+    try {
+        this.where = 'INNER JOIN users ON articles.author_id = users.user_id';
+        const result = await this.listRecords(
+            ' articles.title, articles.contents, users.username',
+        );
+        return result;
+    } catch (error) {
+        console.error('error in get all the articles',error);
+        throw error;
+    }
+}
+
     /**
      * Retrieve articles by username
      * @param username Username to search for
      * @returns Array containing articles data
      */
     async getArticlesByUsername(username: string) {
-        this.from = 'articles INNER JOIN users ON articles.author_id = users.user_id';
-        this.where = `INNER JOIN users ON articles.author_id = users.user_id WHERE users.username = '${username}'`;
-        let result = await this.listRecords(
-            'articles.article_id, articles.title, articles.contents, articles.author_id',
-            [username]
-        );
-        return result;
+        try {
+            this.where = `INNER JOIN users ON articles.author_id = users.user_id WHERE users.username = '${username}'`;
+            let result = await this.listRecords(
+                ' articles.title, articles.contents,users.username',
+            );
+            return result;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
     }
 }
 
-export default  dbarticles;
+export default dbarticles
