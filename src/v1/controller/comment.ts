@@ -30,7 +30,7 @@ export function validateID(req: any, res: any, next: any) {
 */
 router.post('/article/:id/comment',validateID,addCommentToArticle);
 router.get('/:id/comments',validateID,getAllCommentsWithAuthors);
-router.delete('/article/:Id/comment/:commentId',deleteComment);
+router.delete('/article/:id/comment/:commentId',deleteComment);
 
 /*
   Add comment to the article
@@ -103,7 +103,7 @@ async function getAllCommentsWithAuthors(req: any, res: any) {
 async function deleteComment(req: any, res: any) {
     var functionsObj = new functions();
     try {
-        const articleId = req.params.Id;
+        const articleId = req.params.id;
         const commentId = req.params.commentId;
         if (!articleId || !commentId) {
             return res.send(functionsObj.output(0, 'Article ID or Comment ID parameter is missing.',null));
@@ -112,8 +112,7 @@ async function deleteComment(req: any, res: any) {
         if (!token) {
             return res.send(functionsObj.output(0, 'Unauthorized: Missing token.',null));
         }
-        const decodedToken: any = jwt.verify(token, 'abcdefg');
-        const userId = decodedToken.user.userId;
+            const userId = req.tokenData.user.user_id;
         const articlesObj = new dbarticles();
         const article = await articlesObj.getArticleById(articleId);
         if (!article || article.authorId !== userId) {
