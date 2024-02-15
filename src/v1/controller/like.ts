@@ -68,7 +68,6 @@ async function getLikesCount(req: any, res: any) {
             return res.send(functionsObj.output(0,'Failed to retrive the likes for this article'));
         }
     else{
-        
         return res.send(functionsObj.output(1,"liks of the article",{likesCount : likesCount}));
     }
     } catch (error) {
@@ -106,7 +105,6 @@ async function like(req: any, res: any) {
             if (!result) {
                return res.send(functionsObj.output(0,'Failed to like the article'));
             }
-
            return res.send(functionsObj.output(1,'Article Liked Sucessfully'));
         }
     } catch (error) {
@@ -117,3 +115,4 @@ async function like(req: any, res: any) {
 
 
 export default router;
+
