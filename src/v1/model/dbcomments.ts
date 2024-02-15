@@ -29,18 +29,11 @@ export class dbcomments extends appdb {
     /**
      * Retrieve comments by article_id
      * @param articleId Article ID to search for
-     * @returns Array containing comments data
-     */
-   
-    /**
-     * Retrieve comments by article_id
-     * @param articleId Article ID to search for
      * @returns Array containing comments data with contents, comment_date, and username
      */
     async getCommentsByArticleId(articleId: number) {
         try {
             // Assuming you have a User table with the 'users' table name
-            this.from = 'comment_db As c';
             this.where = `INNER JOIN users ON comment_db.user_id = users.user_id WHERE comment_db.article_id = ${articleId} `;
             const result = await this.listRecords(' comment_db.contents, comment_db.comment_date, users.username', ['']);
             console.log('result: ', result);
