@@ -148,12 +148,9 @@ export class db {
 	 * @param username unique id
 	 * @param data key-value pair array
 	 */
-	// updateRecord(id: number, data: any) {
-	// 	return this.update(this.table, data, ' WHERE ' + this.uniqueField + '=' + id);
-	// }
-updateRecord(where: any, data: any) {
-    return this.update(this.table, data, ' WHERE username = \'' + where.username + '\'');
-}
+	updateRecord(id: number, data: any) {
+		return this.update(this.table, data, ' WHERE ' + this.uniqueField + '=' + id);
+	}
 
 
 	/**
@@ -171,7 +168,7 @@ updateRecord(where: any, data: any) {
 	// Modify the listRecords method to accept the parameters correctly
 async listRecords(fields = '*', params: any[] = []) {
     let start = (this.page - 1) * this.rpp;
-    let result = await this.select(this.table, fields, this.where, this.orderby, 'LIMIT ' + this.rpp + ' OFFSET ' + start, params);
+    let result = await this.select(this.table, fields, this.where, this.orderby, 'LIMIT ' + this.rpp + ' OFFSET ' + start,params);
     return !result ? [] : result;
 }
 
