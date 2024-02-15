@@ -9,6 +9,7 @@ export class dbusers extends appdb {
         this.table = 'users';
         this.uniqueField = 'user_id';
         this.jwtSecret='abcdefg';
+       
     }
 
     /**
@@ -91,18 +92,25 @@ async getUserByUserids(userId: string) {
      * @param newUsername New username to update
      * @returns Object containing information about the updated user or null if update fails
      */
-async updateProfileByUsername(currentUsername: string, newUsername: string) {
+async updateUsername(currentUsername: string, newUsername: string) {
     try {
-        const updateData = { username: newUsername } as Record<string, any>;
-        const result = await this.updateRecord({ username: currentUsername }, updateData);
-        console.log('Updated User Profile:', result);
-        return result ? { username: newUsername } : null;
+        const existingUser = await this.getUserByUsername(newUsername);
+        if (existingUser) {
+            throw new Error('Username already exists. Please choose a different username.');
+        }
+        const userToUpdate = await this.getUserByUserids(currentUsername);
+        if (!userToUpdate) {
+            throw new Error('User not found.');
+        }
+        const updateData = { username: newUsername }; 
+        const updatedUser = await this.updateRecord(userToUpdate.user_id, updateData);
+
+        return updatedUser;
     } catch (error) {
         console.error(error);
-        return null;
+        throw error;
     }
 }
-
 }
 
  
