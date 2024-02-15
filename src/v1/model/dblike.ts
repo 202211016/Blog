@@ -49,7 +49,6 @@ export class dblikes extends appdb {
      */
     async getLikesByArticleId(articleId: number) {
         try {
-            this.from = 'likes As l';
             this.where = `INNER JOIN users ON likes.user_id = users.user_id WHERE likes.article_id = ${articleId} `;
             const result = await this.listRecords('likes.article_id,users.username,likes.article_id,likes.like_date',['']);
             return result;
